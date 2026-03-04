@@ -52,6 +52,24 @@ function normalizeLineAngle(angleDeg) {
   return ((((angleDeg + 90) % 180) + 180) % 180) - 90;
 }
 
+function stabilizeLineAngle(targetAngle, previousAngle) {
+  let adjusted = targetAngle;
+
+  while (adjusted - previousAngle > 90) {
+    adjusted -= 180;
+  }
+
+  while (adjusted - previousAngle < -90) {
+    adjusted += 180;
+  }
+
+  return adjusted;
+}
+
+function angleToPipeRotation(vectorX, vectorY) {
+  return Math.atan2(vectorY, vectorX) * (180 / Math.PI) + 90;
+}
+
 function applyColors() {
   document.documentElement.style.setProperty('--bg-color', config.backgroundColor);
   document.documentElement.style.setProperty('--pipe-color', config.pipeColor);
@@ -130,7 +148,8 @@ function createGrid() {
         element: mark,
         x: centerX,
         y: centerY,
-        token: 0
+        token: 0,
+        lastAngle: 0
       });
 
       fragment.appendChild(mark);
@@ -160,6 +179,7 @@ function updateMarks() {
   const smoothnessFactor = config.smoothness / 100;
   const strength = config.strength;
   const isDirectMode = config.rotationMode === 'direct';
+  const isMagneticMode = config.rotationMode === 'magnetic';
 
   for (let row = minRow; row <= maxRow; row += 1) {
     const rowStart = row * gridCols;
@@ -167,8 +187,8 @@ function updateMarks() {
     for (let col = minCol; col <= maxCol; col += 1) {
       const index = rowStart + col;
       const mark = marks[index];
-    const dx = mouseX - mark.x;
-    const dy = mouseY - mark.y;
+      const dx = mouseX - mark.x;
+      const dy = mouseY - mark.y;
       const distanceSquared = dx * dx + dy * dy;
 
       if (distanceSquared > radiusSquared) {
@@ -176,22 +196,38 @@ function updateMarks() {
       }
 
       const distance = Math.sqrt(distanceSquared);
-    const angleTowardCursor = Math.atan2(dy, dx) * (180 / Math.PI) + 90;
-    const normalizedTargetAngle = normalizeLineAngle(angleTowardCursor);
+      const angleTowardCursor = angleToPipeRotation(dx, dy);
+      const normalizedTargetAngle = normalizeLineAngle(angleTowardCursor);
 
       const normalizedDistance = distance / radius;
-    const directCurve = Math.pow(1 - normalizedDistance, 2);
-    const softCurve = Math.pow(1 - normalizedDistance, 1.5);
-      const selectedCurve = isDirectMode ? directCurve : softCurve;
-    const distanceInfluence = (1 - smoothnessFactor) + smoothnessFactor * selectedCurve;
+      const directCurve = Math.pow(1 - normalizedDistance, 2);
+      const softCurve = Math.pow(1 - normalizedDistance, 1.5);
+      const selectedCurve = isDirectMode || isMagneticMode ? directCurve : softCurve;
+      const distanceInfluence = (1 - smoothnessFactor) + smoothnessFactor * selectedCurve;
       const finalInfluence = strength * Math.max(distanceInfluence, 0);
 
       if (isDirectMode) {
-      const directAngle = normalizedTargetAngle * finalInfluence;
-      mark.element.style.transform = `rotate(${directAngle}deg)`;
+        const directAngle = normalizedTargetAngle * finalInfluence;
+        const stableAngle = stabilizeLineAngle(directAngle, mark.lastAngle);
+        mark.element.style.transform = `rotate(${stableAngle}deg)`;
+        mark.lastAngle = stableAngle;
+      } else if (isMagneticMode) {
+        const tangentX = -dy;
+        const tangentY = dx;
+        const radialMix = 0.28;
+        const magneticVectorX = tangentX + dx * radialMix;
+        const magneticVectorY = tangentY + dy * radialMix;
+        const magneticAngle = angleToPipeRotation(magneticVectorX, magneticVectorY);
+        const normalizedMagneticAngle = normalizeLineAngle(magneticAngle);
+        const weightedMagneticAngle = normalizedMagneticAngle * finalInfluence;
+        const stableAngle = stabilizeLineAngle(weightedMagneticAngle, mark.lastAngle);
+        mark.element.style.transform = `rotate(${stableAngle}deg)`;
+        mark.lastAngle = stableAngle;
       } else {
         const weightedAngle = angleTowardCursor * finalInfluence;
-        mark.element.style.transform = `rotate(${weightedAngle}deg)`;
+        const stableAngle = stabilizeLineAngle(weightedAngle, mark.lastAngle);
+        mark.element.style.transform = `rotate(${stableAngle}deg)`;
+        mark.lastAngle = stableAngle;
       }
 
       mark.token = frameToken;
@@ -205,6 +241,7 @@ function updateMarks() {
 
     if (mark && mark.token !== frameToken) {
       mark.element.style.transform = 'rotate(0deg)';
+      mark.lastAngle = 0;
     }
   }
 
