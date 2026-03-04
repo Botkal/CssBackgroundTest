@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="hu">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Kurzor | effekt</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div id="field" aria-hidden="true"></div>
+  <aside id="panel" class="panel" role="region" aria-label="Effekt vezérlők">
+    <header id="panelHeader" class="panel-header">
+      <strong>Háttér effekt</strong>
+      <button id="togglePanel" type="button" aria-expanded="true">−</button>
+    </header>
+
+    <div id="panelBody" class="panel-body">
+      <label>
+        Háttér szín
+        <input id="backgroundColor" type="color" value="#ffffff" />
+      </label>
+
+      <label>
+        Pipe szín
+        <input id="pipeColor" type="color" value="#111111" />
+      </label>
+
+      <label>
+        Jelköz
+        <input id="spacing" type="range" min="20" max="54" step="2" value="28" />
+        <span id="spacingValue">28</span>
+      </label>
+
+      <label>
+        Hatósugár
+        <input id="radius" type="range" min="100" max="2000" step="10" value="260" />
+        <span id="radiusValue">260</span>
+      </label>
+
+      <label>
+        Forgás mód
+        <select id="rotationMode">
+          <option value="soft" selected>Örvény</option>
+          <option value="direct">Mind a kurzor felé</option>
+        </select>
+      </label>
+
+      <label>
+        Lágyság
+        <input id="smoothness" type="range" min="0" max="100" step="0.1" value="100" />
+        <span id="smoothnessValue">100</span>
+      </label>
+
+      <label>
+        Forgás erőssége
+        <input id="strength" type="range" min="0.1" max="1" step="0.05" value="1" />
+        <span id="strengthValue">1.00</span>
+      </label>
+
+      <label>
+        Jelméret
+        <input id="symbolSize" type="range" min="14" max="34" step="1" value="24" />
+        <span id="symbolSizeValue">24</span>
+      </label>
+
+      <label>
+        Ablak áttetszőség
+        <input id="panelOpacity" type="range" min="0.2" max="1" step="0.05" value="0.9" />
+        <span id="panelOpacityValue">0.90</span>
+      </label>
+
+      <label class="toggle-row">
+        <span>FPS kijelző</span>
+        <input id="fpsEnabled" type="checkbox" />
+      </label>
+
+      <p id="fpsReadout" class="fps-readout" hidden>FPS: <strong id="fpsValue">0</strong></p>
+    </div>
+  </aside>
+  <script src="script.js"></script>
+</body>
+</html>

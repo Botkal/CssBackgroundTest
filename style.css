@@ -1,0 +1,132 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg-color: #ffffff;
+  --pipe-color: #111111;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  overflow: hidden;
+  background: var(--bg-color);
+  font-family: Arial, sans-serif;
+}
+
+#field {
+  width: 100vw;
+  height: 100vh;
+  display: grid;
+  justify-content: center;
+  align-content: center;
+  user-select: none;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  color: var(--pipe-color);
+  font-size: 24px;
+  line-height: 1;
+  transform-origin: 50% 50%;
+  will-change: transform;
+}
+
+.panel {
+  position: fixed;
+  top: 24px;
+  left: 24px;
+  width: 280px;
+  background: rgba(17, 24, 39, 0.9);
+  color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  z-index: 20;
+  overflow: hidden;
+}
+
+.panel-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 10px 12px;
+  background: rgba(0, 0, 0, 0.18);
+  cursor: move;
+}
+
+.panel-header button {
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 6px;
+  background: #1f2937;
+  color: #ffffff;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.panel-body {
+  padding: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+.panel-body label {
+  display: grid;
+  gap: 5px;
+  font-size: 0.9rem;
+}
+
+.panel-body input[type='range'] {
+  width: 100%;
+}
+
+.panel-body input[type='color'] {
+  width: 100%;
+  height: 34px;
+  border: 0;
+  border-radius: 6px;
+  background: #1f2937;
+  cursor: pointer;
+}
+
+.panel-body select {
+  width: 100%;
+  border: 0;
+  border-radius: 6px;
+  padding: 8px;
+  background: #1f2937;
+  color: #ffffff;
+}
+
+.toggle-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.toggle-row input[type='checkbox'] {
+  width: 18px;
+  height: 18px;
+}
+
+.fps-readout {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.panel.collapsed .panel-body {
+  display: none;
+}
