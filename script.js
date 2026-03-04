@@ -14,6 +14,11 @@ const spacingValue = document.getElementById('spacingValue');
 const radiusInput = document.getElementById('radius');
 const radiusValue = document.getElementById('radiusValue');
 const rotationModeInput = document.getElementById('rotationMode');
+const magneticTwistRow = document.getElementById('magneticTwistRow');
+const softnessRow = document.getElementById('softnessRow');
+const strengthRow = document.getElementById('strengthRow');
+const magneticTwistInput = document.getElementById('magneticTwist');
+const magneticTwistValue = document.getElementById('magneticTwistValue');
 const smoothnessInput = document.getElementById('smoothness');
 const smoothnessValue = document.getElementById('smoothnessValue');
 const strengthInput = document.getElementById('strength');
@@ -39,6 +44,7 @@ const config = {
   cellSize: Number(spacingInput.value),
   effectRadius: Number(radiusInput.value),
   rotationMode: rotationModeInput.value,
+  magneticTwist: Number(magneticTwistInput.value),
   smoothness: Number(smoothnessInput.value),
   strength: Number(strengthInput.value),
   symbolSize: Number(symbolSizeInput.value)
@@ -73,6 +79,19 @@ function angleToPipeRotation(vectorX, vectorY) {
 function applyColors() {
   document.documentElement.style.setProperty('--bg-color', config.backgroundColor);
   document.documentElement.style.setProperty('--pipe-color', config.pipeColor);
+}
+
+function updateModeControlVisibility() {
+  const mode = config.rotationMode;
+  const visibilityRules = {
+    magneticTwist: mode === 'magnetic',
+    softness: mode === 'soft' || mode === 'direct' || mode === 'magnetic',
+    strength: mode === 'soft' || mode === 'direct' || mode === 'magnetic'
+  };
+
+  magneticTwistRow.classList.toggle('control-hidden', !visibilityRules.magneticTwist);
+  softnessRow.classList.toggle('control-hidden', !visibilityRules.softness);
+  strengthRow.classList.toggle('control-hidden', !visibilityRules.strength);
 }
 
 function fpsLoop(timestamp) {
@@ -214,7 +233,7 @@ function updateMarks() {
       } else if (isMagneticMode) {
         const tangentX = -dy;
         const tangentY = dx;
-        const radialMix = 0.28;
+        const radialMix = config.magneticTwist;
         const magneticVectorX = tangentX + dx * radialMix;
         const magneticVectorY = tangentY + dy * radialMix;
         const magneticAngle = angleToPipeRotation(magneticVectorX, magneticVectorY);
@@ -251,6 +270,7 @@ function updateMarks() {
 function syncPanelValues() {
   spacingValue.textContent = String(config.cellSize);
   radiusValue.textContent = String(config.effectRadius);
+  magneticTwistValue.textContent = config.magneticTwist.toFixed(2);
   smoothnessValue.textContent = config.smoothness.toFixed(1);
   strengthValue.textContent = config.strength.toFixed(2);
   symbolSizeValue.textContent = String(config.symbolSize);
@@ -299,6 +319,13 @@ function bindControls() {
 
   rotationModeInput.addEventListener('change', () => {
     config.rotationMode = rotationModeInput.value;
+    updateModeControlVisibility();
+    updateMarks();
+  });
+
+  magneticTwistInput.addEventListener('input', () => {
+    config.magneticTwist = Number(magneticTwistInput.value);
+    syncPanelValues();
     updateMarks();
   });
 
@@ -391,6 +418,7 @@ bindControls();
 bindCollapse();
 bindDrag();
 applyColors();
+updateModeControlVisibility();
 panel.style.opacity = panelOpacityInput.value;
 setFpsEnabled(config.showFps);
 updateRadiusBounds();

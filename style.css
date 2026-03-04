@@ -127,6 +127,10 @@ body {
   font-size: 0.9rem;
 }
 
+.control-hidden {
+  display: none !important;
+}
+
 .panel.collapsed .panel-body {
   display: none;
 }

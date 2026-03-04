@@ -31,13 +31,7 @@
         <span id="spacingValue">28</span>
       </label>
 
-      <label>
-        Radius
-        <input id="radius" type="range" min="100" max="2000" step="10" value="260" />
-        <span id="radiusValue">260</span>
-      </label>
-
-      <label>
+      <label id="rotationModeRow">
         Rotation Mode
         <select id="rotationMode">
           <option value="soft" selected>Vortex</option>
@@ -47,12 +41,24 @@
       </label>
 
       <label>
+        Radius
+        <input id="radius" type="range" min="100" max="2000" step="10" value="260" />
+        <span id="radiusValue">260</span>
+      </label>
+
+      <label id="magneticTwistRow">
+        Magnetic Twist
+        <input id="magneticTwist" type="range" min="0" max="1" step="0.01" value="0.28" />
+        <span id="magneticTwistValue">0.28</span>
+      </label>
+
+      <label id="softnessRow">
         Softness
         <input id="smoothness" type="range" min="0" max="100" step="0.1" value="100" />
         <span id="smoothnessValue">100</span>
       </label>
 
-      <label>
+      <label id="strengthRow">
         Rotation Strength
         <input id="strength" type="range" min="0.1" max="1" step="0.05" value="1" />
         <span id="strengthValue">1.00</span>
